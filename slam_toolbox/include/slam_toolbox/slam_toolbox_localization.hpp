@@ -20,6 +20,7 @@
 #define SLAM_TOOLBOX_SLAM_TOOLBOX_LOCALIZATION_H_
 
 #include "slam_toolbox/slam_toolbox_common.hpp"
+#include "std_srvs/Empty.h"
 
 namespace slam_toolbox
 {
@@ -38,11 +39,17 @@ protected:
   void localizePoseCallback(
     const geometry_msgs::PoseWithCovarianceStampedConstPtr& msg);
 
+<<<<<<< HEAD:slam_toolbox/include/slam_toolbox/slam_toolbox_localization.hpp
   void odomOnlyCallback(const
       std_msgs::Bool& msg);
 
   void PublishEstimatedPose();
 
+=======
+  bool clearLocalizationBuffer(
+    std_srvs::Empty::Request& req,
+    std_srvs::Empty::Response& resp);
+>>>>>>> 0cc7a4f... first skeleton for clearing observation buffer of localization measurements:include/slam_toolbox/slam_toolbox_localization.hpp
   virtual bool serializePoseGraphCallback(
     slam_toolbox_msgs::SerializePoseGraph::Request& req,
     slam_toolbox_msgs::SerializePoseGraph::Response& resp) override final;
@@ -55,6 +62,7 @@ protected:
     karto::Pose2& karto_pose) override final;
 
   ros::Subscriber localization_pose_sub_;
+<<<<<<< HEAD:slam_toolbox/include/slam_toolbox/slam_toolbox_localization.hpp
   ros::Subscriber localization_use_odom_sub_;
   ros::Publisher score_scan_match_pub_;
   ros::Publisher best_pose_pub_;
@@ -62,6 +70,9 @@ protected:
   kt_bool odomOnly_;
 
   std::string frame_id_;
+=======
+  ros::ServiceServer clear_localization_;
+>>>>>>> 0cc7a4f... first skeleton for clearing observation buffer of localization measurements:include/slam_toolbox/slam_toolbox_localization.hpp
 };
 
 }

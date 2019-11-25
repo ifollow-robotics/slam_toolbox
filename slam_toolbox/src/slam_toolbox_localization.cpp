@@ -31,6 +31,9 @@ LocalizationSlamToolbox::LocalizationSlamToolbox(ros::NodeHandle& nh)
   processor_type_ = PROCESS_LOCALIZATION;
   localization_pose_sub_ = nh.subscribe("/initialpose", 1,
     &LocalizationSlamToolbox::localizePoseCallback, this);
+  clear_localization_ = nh.advertiseService(
+    "clear_localization_buffer",
+    &LocalizationSlamToolbox::clearLocalizationBuffer, this);
 
     localization_use_odom_sub_ = nh.subscribe("/slam_toolbox/odom_only", 1,
       &LocalizationSlamToolbox::odomOnlyCallback, this);
@@ -66,6 +69,17 @@ LocalizationSlamToolbox::LocalizationSlamToolbox(ros::NodeHandle& nh)
 
   nh.param("map_frame", frame_id_, std::string("map"));
   return;
+}
+
+/*****************************************************************************/
+bool LocalizationSlamToolbox::clearLocalizationBuffer(
+  std_srvs::Empty::Request& req,
+  std_srvs::Empty::Response& resp)
+/*****************************************************************************/
+{
+  ROS_INFO("LocalizationSlamToolbox: Clearing localization buffer.");
+  smapper_->clearLocalizationBuffer();
+  return true;
 }
 
 /*****************************************************************************/
@@ -229,6 +243,8 @@ void LocalizationSlamToolbox::localizePoseCallback(const
   }
 
   first_measurement_ = true;
+
+  smapper_->clearLocalizationBuffer();
 
   ROS_INFO("LocalizePoseCallback: Localizing to: (%0.2f %0.2f), theta=%0.2f",
     msg->pose.pose.position.x, msg->pose.pose.position.y,
