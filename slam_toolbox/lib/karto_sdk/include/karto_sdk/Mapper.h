@@ -1595,6 +1595,12 @@ namespace karto
     void ClearLastScan(LocalizedRangeScan* pScan);
 
     /**
+     * Clears the laser scan of device name
+     * @param pScan
+     */
+    void ClearLastScan(const Name& name);
+
+    /**
      * Gets the scan with the given unique id
      * @param id
      * @return scan
