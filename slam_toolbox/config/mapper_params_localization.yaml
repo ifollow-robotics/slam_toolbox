@@ -7,15 +7,16 @@ ceres_dogleg_type: TRADITIONAL_DOGLEG
 ceres_loss_function: None
 
 # ROS Parameters
-odom_frame: odom
-map_frame: map
-base_frame: base_footprint
-scan_topic: /scan
+# odom_frame: odom
+# map_frame: map
+# base_frame: base_footprint
+scan_topic: /lidar/scan_slam
 mode: mapping #localization
 
 # if you'd like to start localizing on bringup in a map and pose
-#map_file_name: test_steve
-#map_start_pose: [5.0, 1.0, 0.0]
+map_file_name: /home/kenza/Downloads/gentilly_serialize
+map_start_pose: [0.0, 0.0, 180.0]
+# map_start_pose: [3.0, 0.6, 180.0]
 
 debug_logging: false
 throttle_scans: 1
@@ -35,18 +36,18 @@ minimum_travel_distance: 0.5
 minimum_travel_heading: 0.5
 scan_buffer_size: 3
 scan_buffer_maximum_scan_distance: 10
-link_match_minimum_response_fine: 0.1  
+link_match_minimum_response_fine: 0.1
 link_scan_maximum_distance: 1.5
-do_loop_closing: true 
+do_loop_closing: true
 loop_match_minimum_chain_size: 3
-loop_match_maximum_variance_coarse: 3.0  
-loop_match_minimum_response_coarse: 0.35    
+loop_match_maximum_variance_coarse: 3.0
+loop_match_minimum_response_coarse: 0.35
 loop_match_minimum_response_fine: 0.45
 
 # Correlation Parameters - Correlation Parameters
 correlation_search_space_dimension: 0.5
 correlation_search_space_resolution: 0.01
-correlation_search_space_smear_deviation: 0.1 
+correlation_search_space_smear_deviation: 0.1
 
 # Correlation Parameters - Loop Closure Parameters
 loop_search_space_dimension: 8.0
@@ -55,12 +56,12 @@ loop_search_space_smear_deviation: 0.03
 loop_search_maximum_distance: 5.0
 
 # Scan Matcher Parameters
-distance_variance_penalty: 0.5      
-angle_variance_penalty: 1.0    
+distance_variance_penalty: 0.5
+angle_variance_penalty: 1.0
 
-fine_search_angle_offset: 0.00349     
-coarse_search_angle_offset: 0.349   
-coarse_angle_resolution: 0.0349        
+fine_search_angle_offset: 0.00349
+coarse_search_angle_offset: 0.349
+coarse_angle_resolution: 0.0349
 minimum_angle_penalty: 0.9
 minimum_distance_penalty: 0.5
 use_response_expansion: true
