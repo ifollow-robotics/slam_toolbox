@@ -10,7 +10,8 @@ ceres_loss_function: None
 # odom_frame: odom
 # map_frame: map
 # base_frame: base_footprint
-scan_topic: /lidar/scan_slam
+scan_topic: /lidar/scan_fused
+#scan_topic: /lidar/scan_slam
 mode: mapping #localization
 
 # if you'd like to immediately start continuing a map at a given pose
@@ -35,8 +36,8 @@ enable_interactive_mode: true
 # General Parameters
 use_scan_matching: true
 use_scan_barycenter: true
-minimum_travel_distance: 0.5
-minimum_travel_heading: 0.5
+minimum_travel_distance: 0.1
+minimum_travel_heading: 0.1
 scan_buffer_size: 10
 scan_buffer_maximum_scan_distance: 10
 link_match_minimum_response_fine: 0.1

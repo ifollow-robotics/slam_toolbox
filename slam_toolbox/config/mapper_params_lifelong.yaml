@@ -10,7 +10,8 @@ ceres_loss_function: None
 # odom_frame: odom
 # map_frame: map
 # base_frame: base_footprint
-scan_topic: /lidar/scan_slam
+scan_topic: /lidar/scan_fused
+#scan_topic: /lidar/scan_slam
 mode: mapping
 
 # lifelong params
@@ -28,7 +29,7 @@ lifelong_candidates_scale: 0.03
 # will use pose
 # map_file_name: maps/gentilly_serialize
 #map_file_name: test_steve
-map_start_pose: [0.951, 0.242 0.0]
+# map_start_pose: [0.951, 0.242 0.0]
 map_start_at_dock: true
 
 debug_logging: false
