@@ -168,7 +168,7 @@ namespace karto
         squaredDistance = frontScanPose.GetPosition().SquaredDistance(backScanPose.GetPosition());
       }
     }
-    
+
     /**
      * Finds and replaces a scan from m_scans with NULL
      * @param pScan
@@ -221,7 +221,7 @@ namespace karto
     LocalizedRangeScanMap m_Scans;
     LocalizedRangeScanVector m_RunningScans;
     LocalizedRangeScan* m_pLastScan;
-    kt_int32u m_NextStateId;    
+    kt_int32u m_NextStateId;
 
     kt_int32u m_RunningBufferMaximumSize;
     kt_double m_RunningBufferMaximumDistance;
@@ -314,7 +314,7 @@ namespace karto
   void MapperSensorManager::RemoveScan(LocalizedRangeScan* pScan)
   {
     GetScanManager(pScan)->RemoveScan(pScan);
-    
+
     LocalizedRangeScanMap::iterator it = m_Scans.find(pScan->GetStateId());
     if (it != m_Scans.end())
     {
@@ -577,6 +577,7 @@ namespace karto
               << rCovariance(0, 0) << ", " << rCovariance(1, 1) << std::endl;
 #endif
     assert(math::InRange(rMean.GetHeading(), -KT_PI, KT_PI));
+
 
     return bestResponse;
   }
@@ -2738,6 +2739,7 @@ namespace karto
             m_pMapperSensorManager->GetRunningScans(pScan->GetSensorName()),
             bestPose,
             covariance);
+
         pScan->SetSensorPose(bestPose);
       }
 
@@ -2773,7 +2775,7 @@ namespace karto
     return false;
   }
 
-  kt_bool Mapper::ProcessLocalization(LocalizedRangeScan* pScan)
+  kt_bool Mapper::ProcessLocalization(LocalizedRangeScan* pScan,kt_double* pScore)
   {
     if (pScan == NULL)
     {
@@ -2808,7 +2810,7 @@ namespace karto
         pScan->GetOdometricPose()));
     }
 
-    // test if scan is outside minimum boundary 
+    // test if scan is outside minimum boundary
     // or if heading is larger then minimum heading
     if (!HasMovedEnough(pScan, pLastScan))
     {
@@ -2822,7 +2824,7 @@ namespace karto
     if (m_pUseScanMatching->GetValue() && pLastScan != NULL)
     {
       Pose2 bestPose;
-      m_pSequentialScanMatcher->MatchScan(pScan,
+      *pScore = m_pSequentialScanMatcher->MatchScan(pScan,
           m_pMapperSensorManager->GetRunningScans(pScan->GetSensorName()),
           bestPose,
           covariance);
@@ -2840,7 +2842,7 @@ namespace karto
       m_pGraph->AddEdges(pScan, covariance);
 
       m_pMapperSensorManager->AddRunningScan(pScan);
-      
+
       if (m_pDoLoopClosing->GetValue())
       {
         std::vector<Name> deviceNames = m_pMapperSensorManager->GetSensorNames();
@@ -2898,7 +2900,7 @@ namespace karto
           adjVerts[i]->RemoveEdge(j);
           m_pScanOptimizer->RemoveConstraint(
             adjEdges[j]->GetSource()->GetObject()->GetUniqueId(),
-            adjEdges[j]->GetTarget()->GetObject()->GetUniqueId()); 
+            adjEdges[j]->GetTarget()->GetObject()->GetUniqueId());
           std::vector<Edge<LocalizedRangeScan>*> edges = m_pGraph->GetEdges();
           std::vector<Edge<LocalizedRangeScan>*>::iterator edgeGraphIt =
             std::find(edges.begin(), edges.end(), adjEdges[j]);
@@ -2927,7 +2929,7 @@ namespace karto
     m_pScanOptimizer->RemoveNode(vertex_to_remove->GetObject()->GetUniqueId());
 
     // 3) delete from vertex map
-    std::map<Name, std::map<int, Vertex<LocalizedRangeScan>*> > 
+    std::map<Name, std::map<int, Vertex<LocalizedRangeScan>*> >
       vertexMap = m_pGraph->GetVertices();
     std::map<int, Vertex<LocalizedRangeScan>*> graphVertices =
       vertexMap[vertex_to_remove->GetObject()->GetSensorName()];
@@ -2947,7 +2949,7 @@ namespace karto
     return true;
   }
 
-  kt_bool Mapper::ProcessAgainstNode(LocalizedRangeScan* pScan, 
+  kt_bool Mapper::ProcessAgainstNode(LocalizedRangeScan* pScan,
     const int& nodeId)
   {
     if (pScan != NULL)
@@ -2955,7 +2957,7 @@ namespace karto
       karto::LaserRangeFinder* pLaserRangeFinder = pScan->GetLaserRangeFinder();
 
       // validate scan
-      if (pLaserRangeFinder == NULL || pScan == NULL || 
+      if (pLaserRangeFinder == NULL || pScan == NULL ||
         pLaserRangeFinder->Validate(pScan) == false)
       {
         return false;

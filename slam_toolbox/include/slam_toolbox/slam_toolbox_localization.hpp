@@ -50,6 +50,7 @@ protected:
     karto::Pose2& karto_pose) override final;
 
   ros::Subscriber localization_pose_sub_;
+  ros::Publisher score_scan_match_pub;
 };
 
 }

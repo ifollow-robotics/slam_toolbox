@@ -29,6 +29,7 @@ LocalizationSlamToolbox::LocalizationSlamToolbox(ros::NodeHandle& nh)
   processor_type_ = PROCESS_LOCALIZATION;
   localization_pose_sub_ = nh.subscribe("/initialpose", 1,
     &LocalizationSlamToolbox::localizePoseCallback, this);
+  score_scan_match_pub = nh.advertise<std_msgs::Float64>("scan_match_score", 1000);
 
   std::string filename;
   geometry_msgs::Pose2D pose;
@@ -39,7 +40,7 @@ LocalizationSlamToolbox::LocalizationSlamToolbox(ros::NodeHandle& nh)
     slam_toolbox_msgs::DeserializePoseGraph::Response resp;
     req.initial_pose = pose;
     req.filename = filename;
-    req.match_type = 
+    req.match_type =
       slam_toolbox_msgs::DeserializePoseGraph::Request::LOCALIZE_AT_POSE;
     if (dock)
     {
@@ -110,14 +111,14 @@ void LocalizationSlamToolbox::laserCallback(
   {
     addScan(laser, scan, pose);
   }
-  
+
   return;
 }
 
 /*****************************************************************************/
 LocalizedRangeScan* LocalizationSlamToolbox::addScan(
   LaserRangeFinder* laser,
-  const sensor_msgs::LaserScan::ConstPtr& scan, 
+  const sensor_msgs::LaserScan::ConstPtr& scan,
   Pose2& karto_pose)
 /*****************************************************************************/
 {
@@ -155,7 +156,14 @@ LocalizedRangeScan* LocalizationSlamToolbox::addScan(
   }
   else if (processor_type_ == PROCESS_LOCALIZATION)
   {
-    processed = smapper_->getMapper()->ProcessLocalization(range_scan);
+    double* pScore;
+    double score = 0.0;
+    pScore = &score;
+    processed = smapper_->getMapper()->ProcessLocalization(range_scan, pScore);
+    std_msgs::Float64 score_msg;
+    score_msg.data = (float)*pScore;
+    score_scan_match_pub.publish(score_msg);
+    std::cout << "pScore = " << *pScore << std::endl;
     update_reprocessing_transform = false;
   }
   else
@@ -194,13 +202,13 @@ void LocalizationSlamToolbox::localizePoseCallback(const
   boost::mutex::scoped_lock l(pose_mutex_);
   if (process_near_pose_)
   {
-    process_near_pose_.reset(new Pose2(msg->pose.pose.position.x, 
+    process_near_pose_.reset(new Pose2(msg->pose.pose.position.x,
       msg->pose.pose.position.y, tf2::getYaw(msg->pose.pose.orientation)));
   }
   else
   {
-    process_near_pose_ = std::make_unique<Pose2>(msg->pose.pose.position.x, 
-      msg->pose.pose.position.y, tf2::getYaw(msg->pose.pose.orientation));    
+    process_near_pose_ = std::make_unique<Pose2>(msg->pose.pose.position.x,
+      msg->pose.pose.position.y, tf2::getYaw(msg->pose.pose.orientation));
   }
 
   first_measurement_ = true;

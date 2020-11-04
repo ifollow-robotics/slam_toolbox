@@ -37,6 +37,8 @@
 #include "slam_toolbox/map_saver.hpp"
 #include "slam_toolbox/loop_closure_assistant.hpp"
 
+#include "std_msgs/Float64.h"
+
 #include <string>
 #include <map>
 #include <vector>
