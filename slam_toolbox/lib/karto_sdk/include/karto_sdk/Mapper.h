@@ -1347,6 +1347,8 @@ namespace karto
                         kt_bool doPenalize = true,
                         kt_bool doRefineMatch = true);
 
+    void setOdomOnly(double d);
+
     /**
      * Finds the best pose for the scan centering the search in the correlation grid
      * at the given pose and search in the space by the vector and angular offsets
@@ -1460,6 +1462,7 @@ namespace karto
       , m_pSearchSpaceProbs(NULL)
       , m_pGridLookup(NULL)
       , m_doPenalize(false)
+      , m_odom_only(false)
     {
     }
 
@@ -1476,6 +1479,7 @@ namespace karto
     kt_int32u m_nAngles;
     kt_double m_searchAngleResolution;
     kt_bool m_doPenalize;
+    kt_bool m_odom_only;
 
     /**
      * Serialization: class ScanMatcher
@@ -1948,7 +1952,7 @@ namespace karto
     kt_bool ProcessAtDock(LocalizedRangeScan* pScan);
     kt_bool ProcessAgainstNode(LocalizedRangeScan* pScan,  const int& nodeId);
     kt_bool ProcessAgainstNodesNearBy(LocalizedRangeScan* pScan);
-    kt_bool ProcessLocalization(LocalizedRangeScan* pScan,kt_double* pScore);
+    kt_bool ProcessLocalization(LocalizedRangeScan* pScan,kt_double* pScore,kt_bool odomOnly);
     kt_bool RemoveNodeFromGraph(Vertex<LocalizedRangeScan>*);
 
     /**
@@ -2414,6 +2418,7 @@ namespace karto
     void setParamMinimumAnglePenalty(double d);
     void setParamMinimumDistancePenalty(double d);
     void setParamUseResponseExpansion(bool b);
+
   };
   BOOST_SERIALIZATION_ASSUME_ABSTRACT(Mapper)
 }  // namespace karto

@@ -26,10 +26,16 @@ LocalizationSlamToolbox::LocalizationSlamToolbox(ros::NodeHandle& nh)
 : SlamToolbox(nh)
 /*****************************************************************************/
 {
+  odomOnly_ = false;
+
   processor_type_ = PROCESS_LOCALIZATION;
   localization_pose_sub_ = nh.subscribe("/initialpose", 1,
     &LocalizationSlamToolbox::localizePoseCallback, this);
-  score_scan_match_pub = nh.advertise<std_msgs::Float64>("scan_match_score", 1000);
+
+    localization_use_odom_sub_ = nh.subscribe("/slam_toolbox/odom_only", 1,
+      &LocalizationSlamToolbox::odomOnlyCallback, this);
+
+  score_scan_match_pub_ = nh.advertise<std_msgs::Float64>("scan_match_score", 1000);
 
   std::string filename;
   geometry_msgs::Pose2D pose;
@@ -153,17 +159,19 @@ LocalizedRangeScan* LocalizationSlamToolbox::addScan(
     // reset to localization mode
     processor_type_ = PROCESS_LOCALIZATION;
     update_reprocessing_transform = true;
+    std::cout << "PROCESSOR TYPE IS NEAR REGION" << std::endl;
   }
   else if (processor_type_ == PROCESS_LOCALIZATION)
   {
     double* pScore;
     double score = 0.0;
     pScore = &score;
-    processed = smapper_->getMapper()->ProcessLocalization(range_scan, pScore);
+    processed = smapper_->getMapper()->ProcessLocalization(range_scan, pScore,odomOnly_);
     std_msgs::Float64 score_msg;
     score_msg.data = (float)*pScore;
-    score_scan_match_pub.publish(score_msg);
-    std::cout << "pScore = " << *pScore << std::endl;
+    if (score_msg.data != 0.0){
+        score_scan_match_pub_.publish(score_msg);
+    }
     update_reprocessing_transform = false;
   }
   else
@@ -218,5 +226,15 @@ void LocalizationSlamToolbox::localizePoseCallback(const
     tf2::getYaw(msg->pose.pose.orientation));
   return;
 }
+
+/*****************************************************************************/
+void LocalizationSlamToolbox::odomOnlyCallback(const
+  std_msgs::Bool& msg)
+/*****************************************************************************/
+{
+  ROS_INFO("Received msg %i",msg.data);
+  odomOnly_ = msg.data;
+}
+
 
 } // end namespace

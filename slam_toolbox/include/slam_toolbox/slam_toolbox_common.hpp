@@ -38,6 +38,7 @@
 #include "slam_toolbox/loop_closure_assistant.hpp"
 
 #include "std_msgs/Float64.h"
+#include "std_msgs/Bool.h"
 
 #include <string>
 #include <map>

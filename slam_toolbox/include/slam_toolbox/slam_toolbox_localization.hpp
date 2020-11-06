@@ -38,6 +38,9 @@ protected:
   void localizePoseCallback(
     const geometry_msgs::PoseWithCovarianceStampedConstPtr& msg);
 
+  void odomOnlyCallback(const
+      std_msgs::Bool& msg);
+
   virtual bool serializePoseGraphCallback(
     slam_toolbox_msgs::SerializePoseGraph::Request& req,
     slam_toolbox_msgs::SerializePoseGraph::Response& resp) override final;
@@ -50,7 +53,10 @@ protected:
     karto::Pose2& karto_pose) override final;
 
   ros::Subscriber localization_pose_sub_;
-  ros::Publisher score_scan_match_pub;
+  ros::Subscriber localization_use_odom_sub_;
+  ros::Publisher score_scan_match_pub_;
+
+  kt_bool odomOnly_;
 };
 
 }

@@ -417,6 +417,11 @@ namespace karto
 
   }
 
+  void ScanMatcher::setOdomOnly(double d)
+  {
+    m_odom_only = d;
+  }
+
   ScanMatcher* ScanMatcher::Create(Mapper* pMapper, kt_double searchSize, kt_double resolution,
                                    kt_double smearDeviation, kt_double rangeThreshold)
   {
@@ -609,8 +614,15 @@ namespace karto
       for (kt_int32u angleIndex = 0; angleIndex < m_nAngles; angleIndex++)
       {
         angle = startAngle + angleIndex * m_searchAngleResolution;
-
-        kt_double response = GetResponse(angleIndex, gridIndex);
+        kt_double response;
+        if (m_odom_only)
+        {
+          response = 0.8;
+        }
+        else
+        {
+          response = GetResponse(angleIndex, gridIndex);
+        }
         if (m_doPenalize && (math::DoubleEqual(response, 0.0) == false))
         {
           // simple model (approximate Gaussian) to take odometry into account
@@ -623,7 +635,6 @@ namespace karto
           kt_double anglePenalty = 1.0 - (ANGLE_PENALTY_GAIN *
                                           squaredAngleDistance / m_pMapper->m_pAngleVariancePenalty->GetValue());
           anglePenalty = math::Maximum(anglePenalty, m_pMapper->m_pMinimumAnglePenalty->GetValue());
-
           response *= (distancePenalty * anglePenalty);
         }
 
@@ -2552,8 +2563,6 @@ namespace karto
     m_pUseResponseExpansion->SetValue((kt_bool)b);
   }
 
-
-
   void Mapper::Initialize(kt_double rangeThreshold)
   {
     if (m_Initialized == false)
@@ -2775,7 +2784,7 @@ namespace karto
     return false;
   }
 
-  kt_bool Mapper::ProcessLocalization(LocalizedRangeScan* pScan,kt_double* pScore)
+  kt_bool Mapper::ProcessLocalization(LocalizedRangeScan* pScan,kt_double* pScore,kt_bool odomOnly)
   {
     if (pScan == NULL)
     {
@@ -2824,6 +2833,7 @@ namespace karto
     if (m_pUseScanMatching->GetValue() && pLastScan != NULL)
     {
       Pose2 bestPose;
+      m_pSequentialScanMatcher->setOdomOnly(odomOnly);
       *pScore = m_pSequentialScanMatcher->MatchScan(pScan,
           m_pMapperSensorManager->GetRunningScans(pScan->GetSensorName()),
           bestPose,

@@ -90,14 +90,14 @@ void SlamToolbox::setSolver(ros::NodeHandle& private_nh_)
     ROS_WARN("unable to find requested solver plugin, defaulting to SPA");
     solver_plugin = "solver_plugins::CeresSolver";
   }
-  try 
+  try
   {
     solver_ = solver_loader_.createInstance(solver_plugin);
     ROS_INFO("Using plugin %s", solver_plugin.c_str());
-  } 
+  }
   catch (const pluginlib::PluginlibException& ex)
   {
-    ROS_FATAL("Failed to create %s, is it registered and built? Exception: %s.", 
+    ROS_FATAL("Failed to create %s, is it registered and built? Exception: %s.",
       solver_plugin.c_str(), ex.what());
     exit(1);
   }
@@ -132,7 +132,7 @@ void SlamToolbox::setParams(ros::NodeHandle& private_nh)
     if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME,
       ros::console::levels::Debug))
     {
-      ros::console::notifyLoggerLevelsChanged();   
+      ros::console::notifyLoggerLevelsChanged();
     }
   }
 
@@ -235,7 +235,7 @@ void SlamToolbox::loadPoseGraphByParams(ros::NodeHandle& nh)
     else
     {
       req.match_type =
-        slam_toolbox_msgs::DeserializePoseGraph::Request::START_AT_GIVEN_POSE;      
+        slam_toolbox_msgs::DeserializePoseGraph::Request::START_AT_GIVEN_POSE;
     }
     deserializePoseGraphCallback(req, resp);
   }
@@ -325,7 +325,7 @@ bool SlamToolbox::updateMap()
   map_.map.header.stamp = ros::Time::now();
   sst_.publish(map_.map);
   sstm_.publish(map_.map.info);
-  
+
   delete occ_grid;
   occ_grid = nullptr;
   return true;
@@ -361,7 +361,7 @@ tf2::Stamped<tf2::Transform> SlamToolbox::setTransformFromPoses(
 
   // if we're continuing a previous session, we need to
   // estimate the homogenous transformation between the old and new
-  // odometry frames and transform the new session 
+  // odometry frames and transform the new session
   // into the older session's frame
   if (update_reprocessing_transform)
   {
@@ -370,7 +370,7 @@ tf2::Stamped<tf2::Transform> SlamToolbox::setTransformFromPoses(
     q1.setRPY(0., 0., tf2::getYaw(odom_to_base_serialized.getRotation()));
     odom_to_base_serialized.setRotation(q1);
     tf2::Transform odom_to_base_current = smapper_->toTfPose(karto_pose);
-    reprocessing_transform_ = 
+    reprocessing_transform_ =
       odom_to_base_serialized * odom_to_base_current.inverse();
   }
 
@@ -453,7 +453,7 @@ bool SlamToolbox::shouldProcessScan(
   }
 
   last_pose = pose;
-  last_scan_time = scan->header.stamp; 
+  last_scan_time = scan->header.stamp;
 
   return true;
 }
@@ -470,10 +470,10 @@ karto::LocalizedRangeScan* SlamToolbox::addScan(
 /*****************************************************************************/
 karto::LocalizedRangeScan* SlamToolbox::addScan(
   karto::LaserRangeFinder* laser,
-  const sensor_msgs::LaserScan::ConstPtr& scan, 
+  const sensor_msgs::LaserScan::ConstPtr& scan,
   karto::Pose2& karto_pose)
 /*****************************************************************************/
-{  
+{
   // get our localized range scan
   karto::LocalizedRangeScan* range_scan = getLocalizedRangeScan(
     laser, scan, karto_pose);
@@ -565,7 +565,7 @@ bool SlamToolbox::pauseNewMeasurementsCallback(
 
   nh_.setParam("paused_new_measurements", !curr_state);
   ROS_INFO("SlamToolbox: Toggled to %s",
-    !curr_state ? "pause taking new measurements." : 
+    !curr_state ? "pause taking new measurements." :
     "actively taking new measurements.");
   resp.status = true;
   return true;
@@ -628,7 +628,7 @@ void SlamToolbox::loadSerializedPoseGraph(
   {
     if (*edges_it != nullptr)
     {
-      solver_->AddConstraint(*edges_it);  
+      solver_->AddConstraint(*edges_it);
     }
   }
 
@@ -702,7 +702,7 @@ bool SlamToolbox::deserializePoseGraphCallback(
   slam_toolbox_msgs::DeserializePoseGraph::Response &resp)
 /*****************************************************************************/
 {
-  if (req.match_type == slam_toolbox_msgs::DeserializePoseGraph::Request::UNSET) 
+  if (req.match_type == slam_toolbox_msgs::DeserializePoseGraph::Request::UNSET)
   {
     ROS_ERROR("Deserialization called without valid processor type set. "
       "Undefined behavior!");
@@ -746,12 +746,12 @@ bool SlamToolbox::deserializePoseGraphCallback(
       break;
     case procType::START_AT_GIVEN_POSE:
       processor_type_ = PROCESS_NEAR_REGION;
-      process_near_pose_ = std::make_unique<karto::Pose2>(req.initial_pose.x, 
+      process_near_pose_ = std::make_unique<karto::Pose2>(req.initial_pose.x,
         req.initial_pose.y, req.initial_pose.theta);
       break;
-    case procType::LOCALIZE_AT_POSE: 
+    case procType::LOCALIZE_AT_POSE:
       processor_type_ = PROCESS_LOCALIZATION;
-      process_near_pose_ = std::make_unique<karto::Pose2>(req.initial_pose.x, 
+      process_near_pose_ = std::make_unique<karto::Pose2>(req.initial_pose.x,
         req.initial_pose.y, req.initial_pose.theta);
       break;
     default:
