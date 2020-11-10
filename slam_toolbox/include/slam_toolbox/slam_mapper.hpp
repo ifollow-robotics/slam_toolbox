@@ -20,6 +20,8 @@
 #define SLAM_TOOLBOX_SLAM_MAPPER_H_
 
 #include "ros/ros.h"
+#include <dynamic_reconfigure/server.h>
+#include <slam_toolbox/STLocalizationConfig.h>
 #include "karto_sdk/Mapper.h"
 #include "karto_sdk/Karto.h"
 #include "tf2/utils.h"
@@ -44,8 +46,11 @@ public:
   // convert TF pose to karto pose
   karto::Pose2 toKartoPose(const tf2::Transform& pose) const;
 
+  dynamic_reconfigure::Server<slam_toolbox::STLocalizationConfig> server;
+  dynamic_reconfigure::Server<slam_toolbox::STLocalizationConfig>::CallbackType f;
   void configure(const ros::NodeHandle& nh);
   void Reset();
+  void reconfigure_cb(slam_toolbox::STLocalizationConfig &config, uint32_t level);
 
   // // processors
   // kt_bool ProcessAtDock(LocalizedRangeScan* pScan);
