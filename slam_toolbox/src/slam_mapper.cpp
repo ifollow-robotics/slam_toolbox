@@ -290,6 +290,13 @@ void SMapper::reconfigure_cb(slam_toolbox::STLocalizationConfig &config, uint32_
   mapper_->setParamMinimumTravelHeading(config.minimum_travel_heading);
   mapper_->setParamCoarseSearchAngleOffset(config.coarse_search_angle_offset);
   mapper_->setParamUseScanMatching(config.use_scan_matching);
+  mapper_->setParamScanBufferSize(config.scan_buffer_size);
+  mapper_->setParamLinkScanMaximumDistance(config.link_scan_maximum_distance);
+  mapper_->setParamLoopSearchMaximumDistance(config.loop_search_maximum_distance);
+  mapper_->setParamLoopSearchSpaceDimension(config.loop_search_space_dimension);
+  mapper_->setParamLoopSearchSpaceSmearDeviation(config.loop_search_space_smear_deviation);
+  mapper_->setParamCorrelationSearchSpaceDimension(config.correlation_search_space_dimension);
+  mapper_->setParamCorrelationSearchSpaceSmearDeviation(config.correlation_search_space_smear_deviation);
 }
 
 } // end namespace
