@@ -18,7 +18,7 @@ mode: localization #mapping
 # map_file_name: /home/ifollow/catkin_ws/src/mapping/slam_toolbox/slam_toolbox/maps/gentilly_serialize
 # map_start_pose: [1.36, -1.46, -3.13]
 # map_start_pose: [0.0, 0.0, 0.0] # Stef mapping
-map_start_pose: [5.61, -21.5, -0.22] # Stef loc_test
+# map_start_pose: [5.61, -21.5, -0.22] # Stef loc_test
 # map_start_pose: [-8.31, -16.25, 1.36] # Stef loc_test at 300 s
 # map_start_pose: [33.99, 7.12, -2.96] # From old franprix rosbag to new
 # map_start_at_dock: true
