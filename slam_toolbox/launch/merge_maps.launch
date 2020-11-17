@@ -1,0 +1,25 @@
+<launch>
+
+
+  <arg name="env" default="stef_eurocentre"/>
+  <arg name="map_path" value="$(find environments)/v3/reality/$(arg env)/map"/>
+
+  <node pkg="tf" type="static_transform_publisher" name="world_to_map" args="0 0 0 0 0 0 /world /map_gmapping 100" />
+  
+  <node name="map_server_gmapping" pkg="map_server" type="map_server" args="$(arg map_path)/map_stef_eurocentre.yaml">
+    <param name="frame_id" value="map_gmapping" />
+  </node>
+
+  <node name="map_server_slam_toolbox" pkg="map_server" type="map_server" args="$(arg map_path)/stef_slam_toolbox.yaml">
+    <remap from="/map" to="/map_slam_toolbox"/>
+    <param name="frame_id" value="map_slam_toolbox" />
+  </node>
+
+  <node name="itf" pkg="rviz_interactive_tf" type="interactive_tf" ns="itf1">
+    <param name="parent_frame" value="/map_gmapping"/>
+    <param name="frame" value="/map_slam_toolbox"/>
+  </node>
+
+  <node type="rviz" name="rviz" pkg="rviz" args="-d $(find slam_toolbox)/config/merge_pgm.rviz" />
+
+</launch>
