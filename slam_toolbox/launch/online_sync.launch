@@ -1,6 +1,9 @@
 <launch>
 
   <node pkg="slam_toolbox" type="sync_slam_toolbox_node" name="slam_toolbox" output="screen">
+    <param name="odom_frame" value="$(optenv ROBOT_ID robot_0)/odom" />
+    <param name="base_frame" value="$(optenv ROBOT_ID robot_0)/base_link" />
+    <param name="map_frame" value="$(optenv ROBOT_ID robot_0)/map"/>
     <rosparam command="load" file="$(find slam_toolbox)/config/mapper_params_online_sync.yaml" />
   </node>
 
