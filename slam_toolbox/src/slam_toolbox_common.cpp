@@ -202,13 +202,14 @@ void SlamToolbox::publishVisualizations()
   if(!nh_.getParam("map_update_interval", map_update_interval))
     map_update_interval = 10.0;
   ros::Rate r(1.0 / map_update_interval);
-
   while(ros::ok())
   {
-    updateMap();
-    if(!isPaused(VISUALIZING_GRAPH))
-    {
-      closure_assistant_->publishGraph();
+    if (smapper_->getMapper()->getParamUpdateMap() == true){
+      updateMap();
+      if(!isPaused(VISUALIZING_GRAPH))
+      {
+        closure_assistant_->publishGraph();
+      }
     }
     r.sleep();
   }

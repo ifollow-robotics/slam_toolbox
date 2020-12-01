@@ -95,6 +95,15 @@ void SMapper::configure(const ros::NodeHandle& nh)
     mapper_->setParamUseScanMatching(use_scan_matching);
   }
 
+  bool should_update_map;
+  if(nh.getParam("should_update_map", should_update_map))
+  {
+    mapper_->setParamUpdateMap(should_update_map);
+  }
+  else {
+    mapper_->setParamUpdateMap(false);
+  }
+
   bool use_scan_barycenter;
   if(nh.getParam("use_scan_barycenter", use_scan_barycenter))
   {
@@ -290,6 +299,7 @@ void SMapper::reconfigure_cb(slam_toolbox::STLocalizationConfig &config, uint32_
   mapper_->setParamMinimumTravelHeading(config.minimum_travel_heading);
   mapper_->setParamCoarseSearchAngleOffset(config.coarse_search_angle_offset);
   mapper_->setParamUseScanMatching(config.use_scan_matching);
+  mapper_->setParamUpdateMap(config.should_update_map);
   mapper_->setParamScanBufferSize(config.scan_buffer_size);
   mapper_->setParamLinkScanMaximumDistance(config.link_scan_maximum_distance);
   mapper_->setParamLoopSearchMaximumDistance(config.loop_search_maximum_distance);

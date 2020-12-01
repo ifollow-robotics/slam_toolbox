@@ -2063,6 +2063,12 @@ namespace karto
         true,
         GetParameterManager());
 
+        m_pUpdateMap = new Parameter<kt_bool>(
+            "ShouldUpdateMap",
+            "whether or not to update the map (could lead to localization problem)",
+            false,
+            GetParameterManager());
+
     m_pUseScanBarycenter = new Parameter<kt_bool>(
         "UseScanBarycenter",
         "Use the barycenter of scan endpoints to define distances between "
@@ -2265,6 +2271,11 @@ namespace karto
     return static_cast<bool>(m_pUseScanMatching->GetValue());
   }
 
+  bool Mapper::getParamUpdateMap()
+  {
+    return static_cast<bool>(m_pUpdateMap->GetValue());
+  }
+
   bool Mapper::getParamUseScanBarycenter()
   {
     return static_cast<bool>(m_pUseScanBarycenter->GetValue());
@@ -2416,6 +2427,11 @@ namespace karto
   void Mapper::setParamUseScanMatching(bool b)
   {
     m_pUseScanMatching->SetValue((kt_bool)b);
+  }
+
+  void Mapper::setParamUpdateMap(bool b)
+  {
+    m_pUpdateMap->SetValue((kt_bool)b);
   }
 
   void Mapper::setParamUseScanBarycenter(bool b)

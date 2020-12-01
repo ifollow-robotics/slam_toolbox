@@ -2095,6 +2095,8 @@ namespace karto
   public:
     void SetUseScanMatching(kt_bool val) { m_pUseScanMatching->SetValue(val); }
 
+    Parameter<kt_bool>* m_pUpdateMap;
+
   protected:
     kt_bool m_Initialized;
 
@@ -2310,6 +2312,7 @@ namespace karto
       std::cout << "Mapper <- m_Listeners\n";
       ar & BOOST_SERIALIZATION_NVP(m_Listeners);
       ar & BOOST_SERIALIZATION_NVP(m_pUseScanMatching);
+      // ar & BOOST_SERIALIZATION_NVP(m_pUpdateMap);
       ar & BOOST_SERIALIZATION_NVP(m_pUseScanBarycenter);
       ar & BOOST_SERIALIZATION_NVP(m_pMinimumTimeInterval);
       ar & BOOST_SERIALIZATION_NVP(m_pMinimumTravelDistance);
@@ -2346,6 +2349,7 @@ namespace karto
     /* Getters */
     // General Parameters
     bool getParamUseScanMatching();
+    bool getParamUpdateMap();
     bool getParamUseScanBarycenter();
     double getParamMinimumTimeInterval();
     double getParamMinimumTravelDistance();
@@ -2384,6 +2388,7 @@ namespace karto
     /* Setters */
     // General Parameters
     void setParamUseScanMatching(bool b);
+    void setParamUpdateMap(bool b);
     void setParamUseScanBarycenter(bool b);
     void setParamMinimumTimeInterval(double d);
     void setParamMinimumTravelDistance(double d);
