@@ -95,6 +95,12 @@ void SMapper::configure(const ros::NodeHandle& nh)
     mapper_->setParamUseScanMatching(use_scan_matching);
   }
 
+  bool correct_initial_pose;
+  if(nh.getParam("correct_initial_pose", correct_initial_pose))
+  {
+    mapper_->setParamUseScanMatching(use_scan_matching);
+  }
+
   bool should_update_map;
   if(nh.getParam("should_update_map", should_update_map))
   {
@@ -299,6 +305,7 @@ void SMapper::reconfigure_cb(slam_toolbox::STLocalizationConfig &config, uint32_
   mapper_->setParamMinimumTravelHeading(config.minimum_travel_heading);
   mapper_->setParamCoarseSearchAngleOffset(config.coarse_search_angle_offset);
   mapper_->setParamUseScanMatching(config.use_scan_matching);
+  mapper_->setParamCorrectInitialPose(config.correct_initial_pose);
   mapper_->setParamUpdateMap(config.should_update_map);
   mapper_->setParamScanBufferSize(config.scan_buffer_size);
   mapper_->setParamLinkScanMaximumDistance(config.link_scan_maximum_distance);

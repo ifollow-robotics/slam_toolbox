@@ -2122,6 +2122,11 @@ namespace karto
     Parameter<kt_bool>* m_pUseScanMatching;
 
     /**
+     * When set to true, initial pose will be corrected by scan matching.
+     */
+    Parameter<kt_bool>* m_pCorrectInitialPose;
+
+    /**
      * Default value is true.
      */
     Parameter<kt_bool>* m_pUseScanBarycenter;
@@ -2349,6 +2354,7 @@ namespace karto
     /* Getters */
     // General Parameters
     bool getParamUseScanMatching();
+    bool getParamCorrectInitialPose();
     bool getParamUpdateMap();
     bool getParamUseScanBarycenter();
     double getParamMinimumTimeInterval();
@@ -2388,6 +2394,7 @@ namespace karto
     /* Setters */
     // General Parameters
     void setParamUseScanMatching(bool b);
+    void setParamCorrectInitialPose(bool b);
     void setParamUpdateMap(bool b);
     void setParamUseScanBarycenter(bool b);
     void setParamMinimumTimeInterval(double d);

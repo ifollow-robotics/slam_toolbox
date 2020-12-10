@@ -2063,11 +2063,17 @@ namespace karto
         true,
         GetParameterManager());
 
-        m_pUpdateMap = new Parameter<kt_bool>(
-            "ShouldUpdateMap",
-            "whether or not to update the map (could lead to localization problem)",
-            false,
-            GetParameterManager());
+    m_pCorrectInitialPose = new Parameter<kt_bool>(
+        "CorrectInitialPose",
+        "When set to true, initial pose will be taken without any correction",
+        true,
+        GetParameterManager());
+
+    m_pUpdateMap = new Parameter<kt_bool>(
+        "ShouldUpdateMap",
+        "whether or not to update the map (could lead to localization problem)",
+        false,
+        GetParameterManager());
 
     m_pUseScanBarycenter = new Parameter<kt_bool>(
         "UseScanBarycenter",
@@ -2271,6 +2277,11 @@ namespace karto
     return static_cast<bool>(m_pUseScanMatching->GetValue());
   }
 
+  bool Mapper::getParamCorrectInitialPose()
+  {
+    return static_cast<bool>(m_pCorrectInitialPose->GetValue());
+  }
+
   bool Mapper::getParamUpdateMap()
   {
     return static_cast<bool>(m_pUpdateMap->GetValue());
@@ -2427,6 +2438,11 @@ namespace karto
   void Mapper::setParamUseScanMatching(bool b)
   {
     m_pUseScanMatching->SetValue((kt_bool)b);
+  }
+
+  void Mapper::setParamCorrectInitialPose(bool b)
+  {
+    m_pCorrectInitialPose->SetValue((kt_bool)b);
   }
 
   void Mapper::setParamUpdateMap(bool b)
@@ -2757,8 +2773,9 @@ namespace karto
       covariance.SetToIdentity();
 
       // correct scan (if not first scan)
-      if (m_pUseScanMatching->GetValue() && pLastScan != NULL)
+      if (m_pUseScanMatching->GetValue() && m_pCorrectInitialPose->GetValue() && pLastScan != NULL)
       {
+        std::cout << "Correction scan " << std::endl;
         Pose2 bestPose;
         m_pSequentialScanMatcher->MatchScan(pScan,
             m_pMapperSensorManager->GetRunningScans(pScan->GetSensorName()),
