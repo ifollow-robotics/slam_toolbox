@@ -41,6 +41,8 @@ protected:
   void odomOnlyCallback(const
       std_msgs::Bool& msg);
 
+  void PublishEstimatedPose();
+
   virtual bool serializePoseGraphCallback(
     slam_toolbox_msgs::SerializePoseGraph::Request& req,
     slam_toolbox_msgs::SerializePoseGraph::Response& resp) override final;
@@ -55,8 +57,11 @@ protected:
   ros::Subscriber localization_pose_sub_;
   ros::Subscriber localization_use_odom_sub_;
   ros::Publisher score_scan_match_pub_;
+  ros::Publisher best_pose_pub_;
 
   kt_bool odomOnly_;
+
+  std::string frame_id_;
 };
 
 }

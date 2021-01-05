@@ -39,6 +39,7 @@
 
 #include "std_msgs/Float64.h"
 #include "std_msgs/Bool.h"
+#include "geometry_msgs/PoseWithCovarianceStamped.h"
 
 #include <string>
 #include <map>

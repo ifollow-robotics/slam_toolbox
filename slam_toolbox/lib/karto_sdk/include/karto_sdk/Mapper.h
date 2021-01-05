@@ -2098,6 +2098,9 @@ namespace karto
     Parameter<kt_bool>* m_pUpdateMap;
 
   protected:
+    Pose2 last_best_pose;
+    Matrix3 last_covariance;
+
     kt_bool m_Initialized;
 
     ScanMatcher* m_pSequentialScanMatcher;
@@ -2352,6 +2355,10 @@ namespace karto
     /* Abstract methods for parameter setters and getters */
 
     /* Getters */
+    // Getter for best pose
+    Pose2 getLastBestPose();
+    Matrix3 getLastCovariance();
+
     // General Parameters
     bool getParamUseScanMatching();
     bool getParamCorrectInitialPose();
@@ -2392,6 +2399,10 @@ namespace karto
     bool getParamUseResponseExpansion();
 
     /* Setters */
+    // Setters for best pose
+    void setLastBestPose(Pose2 pose);
+    void setLastCovariance(Matrix3 cov);
+
     // General Parameters
     void setParamUseScanMatching(bool b);
     void setParamCorrectInitialPose(bool b);

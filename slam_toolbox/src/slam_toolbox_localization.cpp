@@ -36,6 +36,7 @@ LocalizationSlamToolbox::LocalizationSlamToolbox(ros::NodeHandle& nh)
       &LocalizationSlamToolbox::odomOnlyCallback, this);
 
   score_scan_match_pub_ = nh.advertise<std_msgs::Float64>("scan_match_score", 1000);
+  best_pose_pub_ = nh.advertise<geometry_msgs::PoseWithCovarianceStamped>("slam_toolbox_best_pose", 1000);
 
   std::string filename;
   geometry_msgs::Pose2D pose;
@@ -62,6 +63,8 @@ LocalizationSlamToolbox::LocalizationSlamToolbox(ros::NodeHandle& nh)
 
   // in localization mode, disable map saver
   map_saver_.reset();
+
+  nh.param("map_frame", frame_id_, std::string("map"));
   return;
 }
 
@@ -167,11 +170,16 @@ LocalizedRangeScan* LocalizationSlamToolbox::addScan(
     double score = 0.0;
     pScore = &score;
     processed = smapper_->getMapper()->ProcessLocalization(range_scan, pScore,odomOnly_);
+
+    // Get the current estimated pose and its covariance and send it as a PoseWithCovariance msg
+    LocalizationSlamToolbox::PublishEstimatedPose();
+
     std_msgs::Float64 score_msg;
     score_msg.data = (float)*pScore;
     if (score_msg.data != 0.0){
         score_scan_match_pub_.publish(score_msg);
     }
+
     update_reprocessing_transform = false;
   }
   else
@@ -234,6 +242,46 @@ void LocalizationSlamToolbox::odomOnlyCallback(const
 {
   ROS_INFO("Received msg %i",msg.data);
   odomOnly_ = msg.data;
+}
+
+/*****************************************************************************/
+void LocalizationSlamToolbox::PublishEstimatedPose()
+/*****************************************************************************/
+{
+  // Temporary variables
+  Pose2 current_pose;
+  Matrix3 current_cov;
+  geometry_msgs::PoseWithCovarianceStamped best_pose_msg;
+  geometry_msgs::Quaternion quat_msg;
+  geometry_msgs::Point pt_msg; 
+  float cov_msg[36];
+  tf2::Quaternion quat;
+
+  // Fill up header
+  best_pose_msg.header.stamp = ros::Time::now();
+  best_pose_msg.header.frame_id = frame_id_;
+
+  // Get last best estimated pose and its covariance from scan matching
+  current_pose = smapper_->getMapper()->getLastBestPose();
+  current_cov = smapper_->getMapper()->getLastCovariance();
+
+  // Convert from Karto::Pose2 to geometry_msgs::Pose
+  //// Position
+  pt_msg.x = float(current_pose.GetX());
+  pt_msg.y = float(current_pose.GetY());
+  best_pose_msg.pose.pose.position = pt_msg;
+  //// Orientation
+  quat.setRPY(0,0,current_pose.GetHeading());
+  quat_msg = tf2::toMsg(quat);
+  best_pose_msg.pose.pose.orientation = quat_msg;
+
+  // Convert from Matrix3 to geometry_msgs::Quaternion
+  best_pose_msg.pose.covariance[0] = current_cov(0,0);
+  best_pose_msg.pose.covariance[7] = current_cov(1,1);
+  best_pose_msg.pose.covariance[35] = current_cov(2,2);
+
+  // Publish
+  best_pose_pub_.publish(best_pose_msg);
 }
 
 

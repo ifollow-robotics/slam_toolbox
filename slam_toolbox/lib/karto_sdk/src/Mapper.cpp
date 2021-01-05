@@ -583,6 +583,11 @@ namespace karto
 #endif
     assert(math::InRange(rMean.GetHeading(), -KT_PI, KT_PI));
 
+    // Store current best pose and associated covariance
+    // m_pMapper->setLastBestPose(rMean);
+    // m_pMapper->setLastCovariance(rCovariance);
+    
+
 
     return bestResponse;
   }
@@ -1639,12 +1644,15 @@ namespace karto
       Matrix3 covariance;
       // match scan against "near" chain
       kt_double response = m_pMapper->m_pSequentialScanMatcher->MatchScan(pScan, *iter, mean, covariance, false);
+      // m_pMapper->setLastBestPose(mean);
+      // m_pMapper->setLastCovariance(covariance);
       if (response > m_pMapper->m_pLinkMatchMinimumResponseFine->GetValue() - KT_TOLERANCE)
       {
         rMeans.push_back(mean);
         rCovariances.push_back(covariance);
         LinkChainToScan(*iter, pScan, mean, covariance);
       }
+      
     }
   }
 
@@ -2270,6 +2278,18 @@ namespace karto
   }
   /* Adding in getters and setters here for easy parameter access */
 
+  // Getter for last best pose
+
+  Pose2 Mapper::getLastBestPose()
+  {
+    return last_best_pose;
+  }
+
+  Matrix3 Mapper::getLastCovariance()
+  {
+    return last_covariance;
+  }
+
   // General Parameters
 
   bool Mapper::getParamUseScanMatching()
@@ -2434,6 +2454,17 @@ namespace karto
   }
 
   /* Setters for parameters */
+
+  // Setters for best pose
+  void Mapper::setLastBestPose(Pose2 pose)
+  {
+    last_best_pose = pose;
+  }
+  void Mapper::setLastCovariance(Matrix3 cov)
+  {
+    last_covariance = cov;
+  }
+
   // General Parameters
   void Mapper::setParamUseScanMatching(bool b)
   {
@@ -2872,6 +2903,8 @@ namespace karto
           bestPose,
           covariance);
       pScan->SetSensorPose(bestPose);
+      last_best_pose = bestPose;
+      last_covariance = covariance;
     }
 
     // add scan to buffer and assign id
