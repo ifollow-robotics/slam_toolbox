@@ -4,10 +4,7 @@
     <param name="frame_id" value="$(optenv ROBOT_ID robot_0)/map" />
   </node> -->
 
-  <!-- <param name="/use_sim_time" value="true" /> -->
-  <arg name="existing_map"/>
-
-  <arg name="map_path" value="$(find environments)/$(env ROBOT_VER)/$(env RUN_TYPE)/$(env ROBOT_ENV)/map/$(arg existing_map)"/>
+  <arg name="map_path" value="$(find environments)/$(env ROBOT_VER)/$(env RUN_TYPE)/$(env ROBOT_ENV)/map/map_$(env ROBOT_ENV)"/>
 
   <node pkg="slam_toolbox" type="localization_slam_toolbox_node" name="slam_toolbox" output="screen">
     <param name="odom_frame" value="$(optenv ROBOT_ID robot_0)/odom" />
