@@ -427,6 +427,14 @@ bool SlamToolbox::shouldProcessScan(
     return true;
   }
 
+  // If we are in a dynamic environment, no scan matching should be done 
+  bool is_in_dynamic_env;
+  nh_.getParam("is_in_dynamic_env", is_in_dynamic_env);
+  if (is_in_dynamic_env)
+  {
+    return false;
+  }
+
   // we are in a paused mode, reject incomming information
   if(isPaused(NEW_MEASUREMENTS))
   {

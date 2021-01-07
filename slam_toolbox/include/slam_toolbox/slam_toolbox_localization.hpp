@@ -33,6 +33,9 @@ public:
   ~LocalizationSlamToolbox() {};
 
 protected:
+  // Keep nodehandler as an attribute to publish rosparam 
+  ros::NodeHandle nh_;
+
   virtual void laserCallback(
     const sensor_msgs::LaserScan::ConstPtr& scan) override final;
   void localizePoseCallback(

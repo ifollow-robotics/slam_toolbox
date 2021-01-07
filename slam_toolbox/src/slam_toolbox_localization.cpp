@@ -26,17 +26,19 @@ LocalizationSlamToolbox::LocalizationSlamToolbox(ros::NodeHandle& nh)
 : SlamToolbox(nh)
 /*****************************************************************************/
 {
+
+  nh_ = nh;
   odomOnly_ = false;
 
   processor_type_ = PROCESS_LOCALIZATION;
-  localization_pose_sub_ = nh.subscribe("/initialpose", 1,
+  localization_pose_sub_ = nh_.subscribe("/initialpose", 1,
     &LocalizationSlamToolbox::localizePoseCallback, this);
 
-    localization_use_odom_sub_ = nh.subscribe("/slam_toolbox/odom_only", 1,
+    localization_use_odom_sub_ = nh_.subscribe("/slam_toolbox/odom_only", 1,
       &LocalizationSlamToolbox::odomOnlyCallback, this);
 
-  score_scan_match_pub_ = nh.advertise<std_msgs::Float64>("scan_match_score", 1000);
-  best_pose_pub_ = nh.advertise<geometry_msgs::PoseWithCovarianceStamped>("slam_toolbox_best_pose", 1000);
+  score_scan_match_pub_ = nh_.advertise<std_msgs::Float64>("scan_match_score", 1000);
+  best_pose_pub_ = nh_.advertise<geometry_msgs::PoseWithCovarianceStamped>("slam_toolbox_best_pose", 1000);
 
   std::string filename;
   geometry_msgs::Pose2D pose;
@@ -64,7 +66,8 @@ LocalizationSlamToolbox::LocalizationSlamToolbox(ros::NodeHandle& nh)
   // in localization mode, disable map saver
   map_saver_.reset();
 
-  nh.param("map_frame", frame_id_, std::string("map"));
+  nh_.param("map_frame", frame_id_, std::string("map"));
+  nh_.setParam("is_in_dynamic_env", false);
   return;
 }
 
@@ -279,6 +282,23 @@ void LocalizationSlamToolbox::PublishEstimatedPose()
   best_pose_msg.pose.covariance[0] = current_cov(0,0);
   best_pose_msg.pose.covariance[7] = current_cov(1,1);
   best_pose_msg.pose.covariance[35] = current_cov(2,2);
+
+  // Warn if covariance is too big 
+  float cov_thresh = 0.028; // Maximum acceptable value for the sigmas
+  if(current_cov(0,0) > cov_thresh){
+    ROS_WARN("COVARIANCE IN X IS TOO BIG == %f",current_cov(0,0));
+  }
+  if(current_cov(1,1) > cov_thresh){
+    ROS_WARN("COVARIANCE IN Y IS TOO BIG == %f",current_cov(1,1));
+  }
+  bool is_in_dynamic_env;
+  nh_.getParam("is_in_dynamic_env", is_in_dynamic_env);
+  if((current_cov(0,0) > cov_thresh || current_cov(1,1) > cov_thresh) && !is_in_dynamic_env)
+  {
+    ROS_WARN("ROBOT IS IN A DYNAMIC ENVIRONMENT");
+    nh_.setParam("is_in_dynamic_env", true);
+
+  }
 
   // Publish
   best_pose_pub_.publish(best_pose_msg);
