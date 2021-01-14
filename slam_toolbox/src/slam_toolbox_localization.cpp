@@ -157,7 +157,8 @@ LocalizedRangeScan* LocalizationSlamToolbox::addScan(
     range_scan->SetOdometricPose(*process_near_pose_);
     range_scan->SetCorrectedPose(range_scan->GetOdometricPose());
     process_near_pose_.reset(nullptr);
-    processed = smapper_->getMapper()->ProcessAgainstNodesNearBy(range_scan);
+    bool called_by_init_pose = true;
+    processed = smapper_->getMapper()->ProcessAgainstNodesNearBy(range_scan,called_by_init_pose);
 
     // reset to localization mode
     processor_type_ = PROCESS_LOCALIZATION;

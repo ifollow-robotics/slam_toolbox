@@ -1951,7 +1951,7 @@ namespace karto
     // processors
     kt_bool ProcessAtDock(LocalizedRangeScan* pScan);
     kt_bool ProcessAgainstNode(LocalizedRangeScan* pScan,  const int& nodeId);
-    kt_bool ProcessAgainstNodesNearBy(LocalizedRangeScan* pScan);
+    kt_bool ProcessAgainstNodesNearBy(LocalizedRangeScan* pScan, bool called_by_init_pose);
     kt_bool ProcessLocalization(LocalizedRangeScan* pScan,kt_double* pScore,kt_bool odomOnly);
     kt_bool RemoveNodeFromGraph(Vertex<LocalizedRangeScan>*);
 

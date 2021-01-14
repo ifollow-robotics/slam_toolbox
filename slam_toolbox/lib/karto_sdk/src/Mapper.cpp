@@ -2769,7 +2769,7 @@ namespace karto
 	  return false;
   }
 
-  kt_bool Mapper::ProcessAgainstNodesNearBy(LocalizedRangeScan* pScan)
+  kt_bool Mapper::ProcessAgainstNodesNearBy(LocalizedRangeScan* pScan, bool called_by_init_pose)
   {
     if (pScan != NULL)
     {
@@ -2804,19 +2804,25 @@ namespace karto
       covariance.SetToIdentity();
 
       // correct scan (if not first scan)
-      if (m_pUseScanMatching->GetValue() && m_pCorrectInitialPose->GetValue() && pLastScan != NULL)
+      if (m_pUseScanMatching->GetValue() && pLastScan != NULL)
       {
-        std::cout << "Correction scan " << std::endl;
         Pose2 bestPose;
         m_pSequentialScanMatcher->MatchScan(pScan,
             m_pMapperSensorManager->GetRunningScans(pScan->GetSensorName()),
             bestPose,
             covariance);
-
-        pScan->SetSensorPose(bestPose);
+        if(called_by_init_pose==true && !m_pCorrectInitialPose->GetValue())
+        {
+          pScan->SetSensorPose(pScan->GetOdometricPose());
+        }
+        else
+        {
+          std::cout << "Correction scan " << std::endl;
+          pScan->SetSensorPose(bestPose);
+          pScan->SetOdometricPose(pScan->GetCorrectedPose());
+        }
+        
       }
-
-      pScan->SetOdometricPose(pScan->GetCorrectedPose());
 
       // add scan to buffer and assign id
       m_pMapperSensorManager->AddScan(pScan);

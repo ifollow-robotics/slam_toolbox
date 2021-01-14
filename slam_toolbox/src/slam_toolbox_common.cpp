@@ -505,7 +505,8 @@ karto::LocalizedRangeScan* SlamToolbox::addScan(
     range_scan->SetOdometricPose(*process_near_pose_);
     range_scan->SetCorrectedPose(range_scan->GetOdometricPose());
     process_near_pose_.reset(nullptr);
-    processed = smapper_->getMapper()->ProcessAgainstNodesNearBy(range_scan);
+    bool called_by_init_pose = false;
+    processed = smapper_->getMapper()->ProcessAgainstNodesNearBy(range_scan,called_by_init_pose);
     update_reprocessing_transform = true;
     processor_type_ = PROCESS;
   }
